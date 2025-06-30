@@ -67,4 +67,4 @@ Desenvolvido por **Eric Posser**
 - 🐙 [GitHub](https://github.com/ericposser)
 - 📧 E-mail: [eric_alerete2002@hotmail.com](mailto:eric_alerete2002@hotmail.com)
 
-Se este projeto te ajudou, deixe uma ⭐ e compartilhe! 😄
+Se gostou do projeto, deixe uma ⭐ e compartilhe! 😄
