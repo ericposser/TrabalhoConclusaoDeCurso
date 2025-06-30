@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+        const sucesso = "@TempData["Sucesso"]";
+
+        if (sucesso) {
+            const duration = 4000;
+            const toast = Toastify({
+                text: sucesso,
+                duration: duration,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#198754",
+                close: true,
+                stopOnFocus: true
+            });
+            toast.showToast();
+
+            const toastElem = document.querySelectorAll(".toastify.on")[1] || document.querySelector(".toastify.on");
+            const progress = document.createElement("div");
+            progress.classList.add("progress-bar");
+            progress.style.animationDuration = duration + "ms";
+            toastElem.appendChild(progress);
+        }
+    </script>
+}
