@@ -132,28 +132,25 @@
     <script>
         lucide.createIcons();
 
-        // Preencher o input com o valor vindo da API, formatado com vírgula
-        document.querySelectorAll('.preco-input').forEach(input => {
-            const ticker = input.dataset.ticker;
+        $(document).ready(function () {
+            $('.preco-input').on('input', function () {
+                let valor = $(this).val().replace(/[^\d]/g, '');
+                if (valor.length < 3) {
+                    valor = valor.padStart(3, '0');
+                }
 
-            fetch(`/Acao/BuscarAtivo?acao=${ticker}`)
-                .then(response => response.json())
-                .then(data => {
-                    const preco = data.precoAtual;
-                    input.value = preco.toFixed(2).replace('.', ','); // Exibe com vírgula
-                });
-
-            // Permite digitar com vírgula e converte para ponto no submit
-            input.addEventListener('input', (e) => {
-                e.target.value = e.target.value.replace(/[^0-9,]/g, '');
+                let valorFormatado = (parseFloat(valor) / 100).toFixed(2).replace('.', ',');
+                $(this).val(`R$ ${valorFormatado}`);
             });
-        });
 
-        // Converte a vírgula para ponto antes do envio do formulário
-        document.querySelectorAll("form[id^='formDelete']").forEach(form => {
-            form.addEventListener('submit', (e) => {
-                const precoInput = form.querySelector('.preco-input');
-                precoInput.value = precoInput.value.replace(',', '.'); // Substitui por ponto para o backend
+            // Ao enviar o formulário, mantém R$ e vírgula (sem remover ou trocar)
+            // Se quiser remover apenas o "R$" e manter a vírgula, use a linha comentada abaixo
+            $('form').on('submit', function () {
+                $('.preco-input').each(function () {
+                    // Apenas tira o R$ se necessário, mas mantém vírgula
+                    let valor = $(this).val().replace('R$', '').trim();
+                    $(this).val(valor);
+                });
             });
         });
 

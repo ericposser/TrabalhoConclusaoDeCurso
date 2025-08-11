@@ -1,71 +1,215 @@
 @model IEnumerable<PlataformaInvestimentos.Models.Criptomoeda>
-
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Minhas Criptomoedas";
 }
 
-<h1>Index</h1>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">
+            <i data-lucide="circle-dollar-sign" class="me-2" style="width: 1em; height: 1em;"></i> Minhas Criptomoedas
+        </h3>
+        <a asp-action="Create" class="btn btn-primary d-flex align-items-center">
+            <i data-lucide="plus-circle" class="me-1"></i> Adicionar Criptomoeda
+        </a>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Ticker)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nome)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Logo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Quantidade)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PrecoAtual)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DataCompra)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Usuario)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ticker)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Logo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantidade)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PrecoAtual)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DataCompra)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Usuario.Login)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+            <tr>
+                <th>
+                    <i data-lucide="image"></i> Ativo
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewBag.NomeSort"
+                       class="text-decoration-none text-dark d-inline-flex align-items-center gap-1">
+                        <i data-lucide="type"></i>
+                        <span>Nome</span>
+                        @if (ViewBag.NomeSort == "Nome") { <i data-lucide="chevron-down"></i> }
+                        else if (ViewBag.NomeSort == "nome_desc") { <i data-lucide="chevron-up"></i> }
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewBag.PrecoSort"
+                       class="text-decoration-none text-dark d-inline-flex align-items-center gap-1">
+                        <i data-lucide="dollar-sign"></i>
+                        <span>Valor Total</span>
+                        @if (ViewBag.PrecoSort == "Preco") { <i data-lucide="chevron-down"></i> }
+                        else if (ViewBag.PrecoSort == "preco_desc") { <i data-lucide="chevron-up"></i> }
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewBag.QuantidadeSort"
+                       class="text-decoration-none text-dark d-inline-flex align-items-center gap-1">
+                        <i data-lucide="hash"></i>
+                        <span>Quantidade</span>
+                        @if (ViewBag.QuantidadeSort == "Quantidade") { <i data-lucide="chevron-down"></i> }
+                        else if (ViewBag.QuantidadeSort == "quantidade_desc") { <i data-lucide="chevron-up"></i> }
+                    </a>
+                </th>
+                <th><i data-lucide="trash-2"></i> Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <img src="@item.Logo" alt="Logo" width="32" height="32" class="rounded-circle" />
+                            <span class="fw-semibold">@item.Ticker</span>
+                        </div>
+                    </td>
+                    <td>@item.Nome</td>
+                    <td>@item.PrecoAtual.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</td>
+                    <td>@item.Quantidade.ToString("N8", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</td>
+                    <td>
+                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalExcluir@(item.Id)">
+                            <i data-lucide="trash-2" class="me-1" style="width:16px; height:16px;"></i> Excluir
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="modalExcluir@(item.Id)" tabindex="-1" aria-labelledby="modalLabel@(item.Id)" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content rounded-3 shadow-sm">
+                                    <div class="modal-header bg-danger text-white">
+                                        <h5 class="modal-title" id="modalLabel@(item.Id)">
+                                            <i data-lucide="trash-2" class="me-2"></i> Confirmar Venda
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="alert alert-warning small d-flex align-items-start">
+                                            <i data-lucide="alert-triangle" class="me-2 mt-1"></i>
+                                            <div>Você está prestes a <strong>vender parte ou toda</strong> esta criptomoeda. Informe os dados da venda.</div>
+                                        </div>
+                                        <form id="formDelete@(item.Id)" asp-action="Delete" asp-route-id="@item.Id" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="Ticker" value="@item.Ticker" />
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Quantidade</label>
+                                                <input type="text" class="form-control quantidade-input" name="quantidade"
+                                                       id="quantidadeInput@(item.Id)"
+                                                       value="@item.Quantidade.ToString("N8", System.Globalization.CultureInfo.GetCultureInfo("en-US"))"
+                                                       data-disponivel="@item.Quantidade.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                                       required />
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Preço de Venda (R$)</label>
+                                                <input type="text" class="form-control preco-input" name="preco"
+                                                       inputmode="decimal"
+                                                       data-ticker="@item.Ticker"
+                                                       data-precoatual="@item.PrecoAtual.ToString("F8", System.Globalization.CultureInfo.InvariantCulture)"
+                                                       required />
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                <button type="submit" class="btn btn-danger">
+                                                    <i data-lucide="trash" class="me-1"></i> Confirmar Venda
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        lucide.createIcons();
+
+        $(document).ready(function () {
+            $('.preco-input').on('input', function () {
+                let raw = $(this).val().replace(/[^\d]/g, '');
+                if (raw.length < 3) raw = raw.padStart(3, '0');
+
+                let valorNumerico = parseFloat(raw) / 100;
+
+                // ➤ Novo formato com separador de milhar
+                let valorFormatado = new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                    minimumFractionDigits: 2
+                }).format(valorNumerico);
+
+                $(this).val(valorFormatado);
+            });
+
+            // ➤ Validação + envio formatado
+            $('form').on('submit', function (e) {
+                const $form = $(this);
+                const $precoInput = $form.find('.preco-input');
+                const $quantidadeInput = $form.find('.quantidade-input');
+
+                // Remove R$, pontos e converte , para .
+                let preco = $precoInput.val().replace(/[R$\s.]/g, '').replace(',', '.').trim();
+                let quantidadeStr = $quantidadeInput.val().replace(',', '.');
+                let quantidadeDigitada = parseFloat(quantidadeStr);
+                let quantidadeDisponivel = parseFloat($quantidadeInput.data('disponivel'));
+
+                // Validação
+                if (!isNaN(quantidadeDigitada) && quantidadeDigitada > quantidadeDisponivel) {
+                    alert('Você não pode vender mais do que possui!');
+                    e.preventDefault();
+                    return;
+                }
+
+                // Atualiza campos formatados
+                $precoInput.val(preco);
+                $quantidadeInput.val(quantidadeStr);
+            });
+
+            // ➤ Toasts de feedback
+            const sucesso = '@TempData["Sucesso"]';
+            const removido = '@TempData["Removido"]';
+            const duration = 3000;
+
+            if (sucesso === 'True') {
+                const toast = Toastify({
+                    text: "Criptomoeda adicionada com sucesso!",
+                    duration: duration,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#198754",
+                    close: true,
+                    stopOnFocus: true
+                });
+                toast.showToast();
+                const toastElem = document.querySelector(".toastify.on");
+                const progress = document.createElement("div");
+                progress.classList.add("progress-bar");
+                progress.style.animationDuration = duration + "ms";
+                toastElem.appendChild(progress);
+            }
+
+            if (removido === 'True') {
+                const toast = Toastify({
+                    text: "Criptomoeda removida com sucesso!",
+                    duration: duration,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#dc3545",
+                    close: true,
+                    stopOnFocus: true
+                });
+                toast.showToast();
+                const toastElem = document.querySelectorAll(".toastify.on")[1] || document.querySelector(".toastify.on");
+                const progress = document.createElement("div");
+                progress.classList.add("progress-bar");
+                progress.style.animationDuration = duration + "ms";
+                toastElem.appendChild(progress);
+            }
+        });
+    </script>
 }
-    </tbody>
-</table>

@@ -33,9 +33,9 @@
 
                     <div class="mb-3">
                         <label asp-for="PrecoAtual" class="form-label fw-semibold">
-                            <i data-lucide="dollar-sign" class="me-1"></i> Preço Atual
+                            <i data-lucide="dollar-sign" class="me-1"></i> Preço
                         </label>
-                        <input asp-for="PrecoAtual" class="form-control" id="PrecoAtual" step="0.01"/>
+                        <input asp-for="PrecoAtual" class="form-control preco-input" id="PrecoAtual" step="0.01"/>
                     </div>
 
                     <div class="mb-3">
@@ -69,9 +69,31 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+            // Aplicar máscara de dinheiro ao digitar
+            $('.preco-input').on('input', function () {
+                let valorLimpo = $(this).val().replace(/[^\d]/g, '');
+                if (valorLimpo.length < 3) valorLimpo = valorLimpo.padStart(3, '0');
+                let valorFormatado = 'R$ ' + (parseFloat(valorLimpo) / 100).toFixed(2).replace('.', ',');
+                $(this).val(valorFormatado);
+            });
+
+            // Preparar valor para envio
+            $('form').on('submit', function () {
+                $('.preco-input').each(function () {
+                    let valor = $(this).val()
+                        .replace('R$', '')     // remove "R$"
+                        .replace(/\s/g, '')    // remove espaços
+                        .trim();
+
+                    $(this).val(valor); // mantém vírgula
+                });
+            });
+
+            // Definir data atual no campo de data
             const hoje = new Date().toISOString().split('T')[0];
             $('#DataCompra').val(hoje);
 
+            // Buscar ações e aplicar no select2
             $.get('/Acao/ListarTodasAcoes', function (acoes) {
                 const formatResult = (acao) => {
                     if (!acao.id) return acao.text;
@@ -103,6 +125,7 @@
                 $select.val(null).trigger('change');
             });
 
+            // Ao selecionar uma ação, preencher nome e valor com máscara R$
             $('#ticker-select').on('change', function () {
                 const ticker = $(this).val();
                 if (!ticker) return;
@@ -112,12 +135,9 @@
                 $.get(`/Acao/BuscarAtivo?acao=${ticker}`, function (data) {
                     $('#Nome').val(data.nome);
 
-                    const precoFormatado = new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL'
-                    }).format(data.precoAtual);
+                    const precoFormatado = 'R$ ' + data.precoAtual.toFixed(2).replace('.', ',');
+                    $('#PrecoAtual').val(precoFormatado);
 
-                    $('#PrecoAtual').val(data.precoAtual.toFixed(2).replace('.', ','));
                     $('#DataCompra').val(new Date().toISOString().split('T')[0]);
                 });
             });

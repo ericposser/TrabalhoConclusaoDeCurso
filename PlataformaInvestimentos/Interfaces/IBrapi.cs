@@ -11,4 +11,10 @@ public interface IBrapi
     
     Task<List<Brapi>> ObterTodosFundos();
     
+    Task<List<Brapi>> ObterTodasCripto();
+    
+    Task<Brapi?> ObterCripto(string ticker);
+    
+    Task<decimal?> ObterSelicAtual();
+    
 }

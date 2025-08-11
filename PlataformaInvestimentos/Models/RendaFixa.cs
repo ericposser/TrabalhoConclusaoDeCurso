@@ -18,6 +18,10 @@ public class RendaFixa
     [DataType(DataType.Date)]
     [Display(Name = "Data da Compra")]
     public DateTime DataCompra { get; set; }
+    
+    [DataType(DataType.Date)]
+    [Display(Name = "Data de Vencimento")]
+    public DateTime? DataVencimento { get; set; }
 
     [Required]
     [Display(Name = "Valor Total(R$)")]

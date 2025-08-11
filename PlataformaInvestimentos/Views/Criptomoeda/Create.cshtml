@@ -1,60 +1,176 @@
 @model PlataformaInvestimentos.Models.Criptomoeda
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Adicionar Criptomoeda";
 }
 
-<h1>Create</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0 rounded-4 p-4">
+                <h3 class="mb-4 text-center">
+                    <i data-lucide="circle-dollar-sign" class="me-2 align-middle" style="width: 28px; height: 28px;"></i> Adicionar Criptomoeda
+                </h3>
 
-<h4>Criptomoeda</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Ticker" class="control-label"></label>
-                <input asp-for="Ticker" class="form-control" />
-                <span asp-validation-for="Ticker" class="text-danger"></span>
+                <form asp-action="Create">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small"></div>
+
+                    <div class="mb-3">
+                        <label for="ticker-select" class="form-label fw-semibold">
+                            <i data-lucide="search" class="me-1"></i> Criptomoeda
+                        </label>
+                        <select id="ticker-select" class="form-select" disabled>
+                            <option>Carregando...</option>
+                        </select>
+                        <input type="hidden" id="Ticker" name="Ticker" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Nome" class="form-label fw-semibold">
+                            <i data-lucide="type" class="me-1"></i> Nome
+                        </label>
+                        <input asp-for="Nome" class="form-control" id="Nome" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PrecoAtual" class="form-label fw-semibold">
+                            <i data-lucide="dollar-sign" class="me-1"></i> Preço
+                        </label>
+                        <input asp-for="PrecoAtual" class="form-control preco-input" id="PrecoAtual" step="0.01" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Quantidade" class="form-label fw-semibold">
+                            <i data-lucide="hash" class="me-1"></i> Quantidade
+                        </label>
+                        <input asp-for="Quantidade" class="form-control" id="Quantidade" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="DataCompra" class="form-label fw-semibold">
+                            <i data-lucide="calendar" class="me-1"></i> Data da Compra
+                        </label>
+                        <input asp-for="DataCompra" class="form-control" type="date" id="DataCompra" />
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i data-lucide="arrow-left" class="me-1"></i> Voltar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i data-lucide="check-circle" class="me-1"></i> Salvar
+                        </button>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="Nome" class="control-label"></label>
-                <input asp-for="Nome" class="form-control" />
-                <span asp-validation-for="Nome" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Logo" class="control-label"></label>
-                <input asp-for="Logo" class="form-control" />
-                <span asp-validation-for="Logo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Quantidade" class="control-label"></label>
-                <input asp-for="Quantidade" class="form-control" />
-                <span asp-validation-for="Quantidade" class="text-danger"></span>
-            </div>
-            
-            <div class="form-group">
-                <label asp-for="PrecoAtual" class="control-label"></label>
-                <input asp-for="PrecoAtual" class="form-control" />
-                <span asp-validation-for="PrecoAtual" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DataCompra" class="control-label"></label>
-                <input asp-for="DataCompra" class="form-control" />
-                <span asp-validation-for="DataCompra" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UsuarioId" class="control-label"></label>
-                <select asp-for="UsuarioId" class ="form-control" asp-items="ViewBag.UsuarioId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const hoje = new Date().toISOString().split('T')[0];
+            $('#DataCompra').val(hoje);
 
+            const $select = $('#ticker-select');
+            const $precoInput = $('#PrecoAtual');
+            const $quantidadeInput = $('#Quantidade');
+            let precoRealCripto = 0;
+
+            // Carregando criptos
+            $select.prop('disabled', true).html('<option>Carregando...</option>');
+
+            $.get('/Criptomoeda/ListarTodasCriptos', function (criptos) {
+                const formatResult = (cripto) => {
+                    if (!cripto.id) return cripto.text;
+                    const logo = cripto.logo || '/img/sem-logo.png';
+                    return `
+                        <div class="d-flex align-items-center">
+                            <img src="${logo}" class="me-2 rounded-circle" width="24" height="24" />
+                            <span>${cripto.text}</span>
+                        </div>
+                    `;
+                };
+
+                if ($select.hasClass('select2-hidden-accessible')) {
+                    $select.select2('destroy');
+                }
+
+                $select.empty();
+                $select.select2({
+                    data: criptos,
+                    placeholder: 'Selecione uma criptomoeda',
+                    allowClear: true,
+                    width: '100%',
+                    templateResult: formatResult,
+                    templateSelection: formatResult,
+                    escapeMarkup: m => m
+                });
+
+                $select.prop('disabled', false).val(null).trigger('change');
+            });
+
+            $select.on('change', function () {
+                const ticker = $(this).val();
+                if (!ticker) return;
+
+                $('#Ticker').val(ticker);
+
+                $.get(`/Criptomoeda/BuscarCripto?cripto=${ticker}`, function (data) {
+                    precoRealCripto = data.precoAtual;
+                    $('#Nome').val(data.nome);
+
+                    const precoFormatado = new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    }).format(precoRealCripto);
+
+                    $precoInput.val(precoFormatado);
+                    $quantidadeInput.val((1).toFixed(8).replace('.', ','));
+                    $('#DataCompra').val(new Date().toISOString().split('T')[0]);
+                });
+            });
+
+            $precoInput.on('input', function () {
+                let valorLimpo = $(this).val().replace(/[^\d]/g, '');
+
+                if (valorLimpo.length < 3) valorLimpo = valorLimpo.padStart(3, '0');
+
+                let valorNumerico = parseFloat(valorLimpo) / 100;
+                let valorFormatado = new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(valorNumerico);
+
+                $(this).val(valorFormatado);
+
+                if (precoRealCripto > 0) {
+                    const quantidade = valorNumerico / precoRealCripto;
+                    $quantidadeInput.val(quantidade.toFixed(8).replace('.', ','));
+                } else {
+                    $quantidadeInput.val('');
+                }
+            });
+
+            $('form').on('submit', function () {
+                let preco = $precoInput.val()
+                    .replace('R$', '')
+                    .replace(/\./g, '')
+                    .replace(',', '.')
+                    .trim();
+
+                $precoInput.val(preco);
+
+                let qtd = $quantidadeInput.val()
+                    .replace(',', '.')
+                    .trim();
+
+                $quantidadeInput.val(qtd);
+            });
+
+            lucide.createIcons();
+        });
+    </script>
+}

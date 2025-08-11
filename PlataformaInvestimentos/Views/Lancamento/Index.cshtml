@@ -1,5 +1,8 @@
-@model IEnumerable<PlataformaInvestimentos.Models.Lancamento>
+@model X.PagedList.IPagedList<PlataformaInvestimentos.Models.Lancamento>
 @using System.Globalization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Mvc.Core.Common
 
 @{
     ViewData["Title"] = "Meus Lançamentos";
@@ -13,7 +16,6 @@
     </div>
 
     <div class="table-responsive">
-        @{ var current = (ViewBag.CurrentSort as string) ?? ""; }
         <table class="table table-hover align-middle">
             <thead class="table-light">
             <tr>
@@ -22,14 +24,8 @@
                        class="text-decoration-none text-dark d-inline-flex align-items-center gap-1">
                         <i data-lucide="move-vertical"></i>
                         <span>Movimentação</span>
-                        @if (ViewBag.MovSort == "Movimentacao")
-                        {
-                            <i data-lucide="chevron-down"></i>
-                        }
-                        else if (ViewBag.MovSort == "mov_desc")
-                        {
-                            <i data-lucide="chevron-up"></i>
-                        }
+                        @if (ViewBag.MovSort == "Movimentacao") { <i data-lucide="chevron-down"></i> }
+                        else if (ViewBag.MovSort == "mov_desc") { <i data-lucide="chevron-up"></i> }
                     </a>
                 </th>
                 <th>
@@ -37,14 +33,8 @@
                        class="text-decoration-none text-dark d-inline-flex align-items-center gap-1">
                         <i data-lucide="box"></i>
                         <span>Produto</span>
-                        @if (ViewBag.ProdSort == "Produto")
-                        {
-                            <i data-lucide="chevron-down"></i>
-                        }
-                        else if (ViewBag.ProdSort == "prod_desc")
-                        {
-                            <i data-lucide="chevron-up"></i>
-                        }
+                        @if (ViewBag.ProdSort == "Produto") { <i data-lucide="chevron-down"></i> }
+                        else if (ViewBag.ProdSort == "produto_desc") { <i data-lucide="chevron-up"></i> }
                     </a>
                 </th>
                 <th>
@@ -52,15 +42,8 @@
                        class="text-decoration-none text-dark d-inline-flex align-items-center gap-1">
                         <i data-lucide="hash"></i>
                         <span>Quantidade</span>
-
-                        @if (current == "Quantidade")
-                        {
-                            <i data-lucide="chevron-down"></i>
-                        }
-                        else if (current == "quantidade_desc")
-                        {
-                            <i data-lucide="chevron-up"></i>
-                        }
+                        @if (ViewBag.QtdSort == "Quantidade") { <i data-lucide="chevron-down"></i> }
+                        else if (ViewBag.QtdSort == "quantidade_desc") { <i data-lucide="chevron-up"></i> }
                     </a>
                 </th>
                 <th>
@@ -68,15 +51,8 @@
                        class="text-decoration-none text-dark d-inline-flex align-items-center gap-1">
                         <i data-lucide="calculator"></i>
                         <span>Valor Total</span>
-
-                        @if (current == "ValorTotal")
-                        {
-                            <i data-lucide="chevron-down"></i>
-                        }
-                        else if (current == "valortotal_desc")
-                        {
-                            <i data-lucide="chevron-up"></i>
-                        }
+                        @if (ViewBag.TotalSort == "ValorTotal") { <i data-lucide="chevron-down"></i> }
+                        else if (ViewBag.TotalSort == "valortotal_desc") { <i data-lucide="chevron-up"></i> }
                     </a>
                 </th>
                 <th>
@@ -84,14 +60,8 @@
                        class="text-decoration-none text-dark d-inline-flex align-items-center gap-1">
                         <i data-lucide="calendar"></i>
                         <span>Data</span>
-                        @if (ViewBag.DataSort == "Data")
-                        {
-                            <i data-lucide="chevron-down"></i>
-                        }
-                        else if (ViewBag.DataSort == "data_desc")
-                        {
-                            <i data-lucide="chevron-up"></i>
-                        }
+                        @if (ViewBag.DataSort == "Data") { <i data-lucide="chevron-down"></i> }
+                        else if (ViewBag.DataSort == "data_desc") { <i data-lucide="chevron-up"></i> }
                     </a>
                 </th>
             </tr>
@@ -101,7 +71,6 @@
             {
                 <tr>
                     <td>
-                        @* Badge redondo/pill *@
                         @if (item.Movimentacao.Equals("Compra", StringComparison.OrdinalIgnoreCase))
                         {
                             <span class="badge bg-success rounded-pill px-3 py-1 text-white">
@@ -116,18 +85,18 @@
                         }
                     </td>
                     <td>@item.Produto</td>
-                    <td>
-                        @* só parte inteira, sem virgula *@
-                        @item.Quantidade.ToString("F0", CultureInfo.GetCultureInfo("pt-BR"))
-                    </td>
-                    <td>
-                        @item.ValorTotal.ToString("C", CultureInfo.GetCultureInfo("pt-BR"))
-                    </td>
+                    <td>@item.Quantidade.ToString("F0", CultureInfo.GetCultureInfo("pt-BR"))</td>
+                    <td>@item.ValorTotal.ToString("C", CultureInfo.GetCultureInfo("pt-BR"))</td>
                     <td>@item.Data.ToShortDateString()</td>
                 </tr>
             }
             </tbody>
         </table>
+    </div>
+
+    <div class="d-flex justify-content-center">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort }),
+            new PagedListRenderOptions { UlElementClasses = new[] { "pagination" }, LiElementClasses = new[] { "page-item" }, PageClasses = new[] { "page-link" } })
     </div>
 </div>
 

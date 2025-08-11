@@ -33,9 +33,9 @@
 
                     <div class="mb-3">
                         <label asp-for="PrecoAtual" class="form-label fw-semibold">
-                            <i data-lucide="dollar-sign" class="me-1"></i> Preço Atual
+                            <i data-lucide="dollar-sign" class="me-1"></i> Preço
                         </label>
-                        <input asp-for="PrecoAtual" class="form-control" id="PrecoAtual" step="0.01"/>
+                        <input asp-for="PrecoAtual" class="form-control preco-input" id="PrecoAtual" step="0.01"/>
                     </div>
 
                     <div class="mb-3">
@@ -49,7 +49,7 @@
                         <label asp-for="DataCompra" class="form-label fw-semibold">
                             <i data-lucide="calendar" class="me-1"></i> Data da Compra
                         </label>
-                        <input asp-for="DataCompra" class="form-control" type="date" id="DataCompra"  />
+                        <input asp-for="DataCompra" class="form-control" type="date" id="DataCompra" />
                     </div>
 
                     <div class="d-flex justify-content-between mt-4">
@@ -69,9 +69,31 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+            // Máscara ao digitar
+            $('.preco-input').on('input', function () {
+                let valorLimpo = $(this).val().replace(/[^\d]/g, '');
+                if (valorLimpo.length < 3) valorLimpo = valorLimpo.padStart(3, '0');
+                let valorFormatado = 'R$ ' + (parseFloat(valorLimpo) / 100).toFixed(2).replace('.', ',');
+                $(this).val(valorFormatado);
+            });
+
+            // Limpar "R$" na submissão
+            $('form').on('submit', function () {
+                $('.preco-input').each(function () {
+                    let valor = $(this).val()
+                        .replace('R$', '')
+                        .replace(/\s/g, '')
+                        .trim();
+
+                    $(this).val(valor);
+                });
+            });
+
+            // Preencher data atual
             const hoje = new Date().toISOString().split('T')[0];
             $('#DataCompra').val(hoje);
 
+            // Popular lista de fundos
             $.get('/FundoImobiliario/ListarTodosFundos', function (fundos) {
                 const formatResult = (fundo) => {
                     if (!fundo.id) return fundo.text;
@@ -103,6 +125,7 @@
                 $select.val(null).trigger('change');
             });
 
+            // Buscar dados do fundo selecionado
             $('#fundo-select').on('change', function () {
                 const ticker = $(this).val();
                 if (!ticker) return;
@@ -112,12 +135,9 @@
                 $.get(`/FundoImobiliario/BuscarAtivo?fundo=${ticker}`, function (data) {
                     $('#Nome').val(data.nome);
 
-                    const precoFormatado = new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL'
-                    }).format(data.precoAtual);
-                    
-                    $('#PrecoAtual').val(data.precoAtual.toFixed(2).replace('.', ','));
+                    const precoFormatado = 'R$ ' + data.precoAtual.toFixed(2).replace('.', ',');
+                    $('#PrecoAtual').val(precoFormatado);
+
                     $('#DataCompra').val(new Date().toISOString().split('T')[0]);
                 });
             });
