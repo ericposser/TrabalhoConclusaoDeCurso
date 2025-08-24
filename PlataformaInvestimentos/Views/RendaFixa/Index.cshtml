@@ -8,7 +8,7 @@
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold">
-            <i data-lucide="banknote-arrow-up" class="me-2" style="width: 1em; height: 1em;"></i> Minhas Rendas Fixas
+            <i data-lucide="banknote" class="me-2" style="width: 1em; height: 1em;"></i> Minhas Rendas Fixas
         </h3>
         <a asp-action="Create" class="btn btn-primary d-flex align-items-center">
             <i data-lucide="plus-circle" class="me-1"></i> Adicionar Renda Fixa
@@ -21,8 +21,8 @@
             <tr>
                 <th><i data-lucide="type"></i> Emissor</th>
                 <th><i data-lucide="dollar-sign"></i> Valor Total</th>
-                <th><i data-lucide="percent"></i> Taxa</th>
                 <th><i data-lucide="calendar"></i> Data da Compra</th>
+                <th><i data-lucide="calendar"></i> Data de Vencimento</th>
                 <th><i data-lucide="trash-2"></i> Ações</th>
             </tr>
             </thead>
@@ -32,8 +32,12 @@
                 <tr>
                     <td>@item.Emissor</td>
                     <td>@item.Valor.ToString("C", CultureInfo.GetCultureInfo("pt-BR"))</td>
-                    <td>@item.Taxa.ToString("F2", CultureInfo.InvariantCulture)%</td>
                     <td>@item.DataCompra.ToShortDateString()</td>
+                    <td>
+                        @(item.DataVencimento.HasValue
+                            ? item.DataVencimento.Value.ToString("dd/MM/yyyy")
+                            : "-")
+                    </td>
                     <td>
                         <button type="button" class="btn btn-outline-danger btn-sm"
                                 data-bs-toggle="modal"
