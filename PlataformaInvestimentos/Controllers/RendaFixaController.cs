@@ -34,14 +34,13 @@ namespace PlataformaInvestimentos.Controllers
             return View();
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(RendaFixa rendaFixa, [FromServices] IBrapi brapi)
         {
             try
             {
-                if (rendaFixa.DataVencimento < rendaFixa.DataCompra)
+                if (rendaFixa.DataVencimento <= rendaFixa.DataCompra)
                 {
                     ModelState.AddModelError("DataVencimento",
                         "A data de vencimento não pode ser menor que a data de compra.");

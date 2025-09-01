@@ -48,8 +48,6 @@ public class BrapiService : IBrapi
         var url = $"https://brapi.dev/api/quote/{ticker}?token={token}";
 
         var response = await _httpClient.GetAsync(url);
-        if (!response.IsSuccessStatusCode)
-            return null;
 
         var jsonParaString = await response.Content.ReadAsStringAsync();
         using var documentoJson = JsonDocument.Parse(jsonParaString);
@@ -70,8 +68,6 @@ public class BrapiService : IBrapi
         var url = $"https://brapi.dev/api/quote/list?token={token}&type=stock";
 
         var response = await _httpClient.GetAsync(url);
-        if (!response.IsSuccessStatusCode)
-            return new List<Brapi>();
 
         var json = await response.Content.ReadAsStringAsync();
         using var doc = JsonDocument.Parse(json);
@@ -102,8 +98,6 @@ public class BrapiService : IBrapi
         var url = $"https://brapi.dev/api/quote/list?token={token}&type=fund";
 
         var response = await _httpClient.GetAsync(url);
-        if (!response.IsSuccessStatusCode)
-            return new List<Brapi>();
 
         var json = await response.Content.ReadAsStringAsync();
         using var doc = JsonDocument.Parse(json);
@@ -178,8 +172,6 @@ public class BrapiService : IBrapi
         var url = $"https://brapi.dev/api/v2/crypto?coin={ticker}&currency=BRL&token={token}";
 
         var response = await _httpClient.GetAsync(url);
-        if (!response.IsSuccessStatusCode)
-            return null;
 
         var json = await response.Content.ReadAsStringAsync();
         using var doc = JsonDocument.Parse(json);
@@ -208,8 +200,6 @@ public class BrapiService : IBrapi
         var url = $"https://brapi.dev/api/v2/prime-rate?country=brazil&token={token}";
 
         var response = await _httpClient.GetAsync(url);
-        if (!response.IsSuccessStatusCode)
-            return null;
 
         var json = await response.Content.ReadAsStringAsync();
         using var doc = JsonDocument.Parse(json);
