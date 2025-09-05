@@ -3,7 +3,6 @@
 Uma plataforma web desenvolvida para auxiliar investidores no controle e acompanhamento de seus ativos financeiros, de forma intuitiva, segura e organizada.
 
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-blue)
-![CSharp](https://img.shields.io/badge/C%23-8.0-239120?logo=csharp&logoColor=white)
 ![.NET](https://img.shields.io/badge/.NET-8.0-blueviolet)
 ![MySQL](https://img.shields.io/badge/MySQL-005C84?logo=mysql&logoColor=white)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5.x-purple)
@@ -54,7 +53,6 @@ Uma plataforma web desenvolvida para auxiliar investidores no controle e acompan
 
 ## 📸 Layout e Interface
 
-💡 Interface moderna, responsiva e centrada na experiência do usuário.  
 🧭 Sidebar clara e intuitiva.  
 💬 Toasts com feedback instantâneo.  
 🔒 Telas de login e alteração de dados com design minimalista.
